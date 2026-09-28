@@ -41,13 +41,25 @@ export function AspectMedia({
   const showFallback = missing || failed
   const objectFit = fit === 'contain' ? 'object-contain' : 'object-cover'
 
+  /**
+   * `aspect: 'auto'` means "whatever shape the asset is", which is right for a
+   * tall screenshot that should not be cropped. Left alone it also means the
+   * container has no height until the image decodes, so everything below it
+   * jumps down on load. Where the intrinsic size is known we hand the ratio to
+   * the container so the space is reserved up front and nothing shifts.
+   */
+  const isAuto = media.aspect === 'auto'
+  const reserveRatio =
+    isAuto && media.width && media.height ? `${media.width} / ${media.height}` : undefined
+
   return (
     <div
       className={cn(
         'relative w-full overflow-hidden rounded border border-line bg-bg-soft',
-        aspectClass(media.aspect),
+        isAuto ? undefined : aspectClass(media.aspect),
         className,
       )}
+      style={reserveRatio ? { aspectRatio: reserveRatio } : undefined}
     >
       {showFallback ? (
         <Fallback media={media} reason={missing ? 'missing' : 'failed'} text={fallbackText} />

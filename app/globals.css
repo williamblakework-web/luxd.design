@@ -120,6 +120,39 @@
     @apply border-b-2 border-accent pb-1;
   }
 
+  /* Client logo marks.
+     Grayscale and dimmed at rest so the wall reads as one texture, full brand
+     colour on hover. These are dark lettered transparent PNGs, so dark mode
+     also inverts them or they disappear against the near black ground.
+     Written here rather than with Tailwind's `dark:` variant because the theme
+     has two triggers, the data-theme attribute and the OS preference, and the
+     variant only covers the first. Same dual condition as the colour tokens. */
+  .logo-mark {
+    @apply max-h-10 w-auto max-w-full object-contain opacity-60 grayscale;
+    transition: filter 0.2s ease, opacity 0.2s ease;
+  }
+
+  .group:hover .logo-mark {
+    @apply opacity-100 grayscale-0;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) .logo-mark {
+      filter: grayscale(1) invert(1);
+    }
+    :root:not([data-theme='light']) .group:hover .logo-mark {
+      filter: none;
+    }
+  }
+
+  :root[data-theme='dark'] .logo-mark {
+    filter: grayscale(1) invert(1);
+  }
+
+  :root[data-theme='dark'] .group:hover .logo-mark {
+    filter: none;
+  }
+
   .prose-measure {
     @apply max-w-measure text-ink-2;
   }

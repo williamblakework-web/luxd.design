@@ -62,12 +62,20 @@ export function CaseStudyTemplate({ slug }: { slug: string }) {
         <BlockRenderer blocks={project.blocks} testimonials={state.document.testimonials} projectSlug={project.slug} />
       </div>
 
-      <nav className="container-narrow flex flex-wrap justify-between gap-4 border-t border-line py-10" aria-label="Case study">
-        <Link href="/" className="font-mono text-step--1 text-accent underline-offset-4 hover:underline">
+      {/* -mx-2 keeps the links optically flush with the container edge while
+          the padding gives them a 44px target, which bare text links miss. */}
+      <nav className="container-narrow flex flex-wrap justify-between gap-2 border-t border-line py-8" aria-label="Case study">
+        <Link
+          href="/"
+          className="-mx-2 inline-flex min-h-[44px] items-center rounded px-2 font-mono text-step--1 text-accent underline-offset-4 hover:underline"
+        >
           &larr; All work
         </Link>
         {next && next.slug !== project.slug ? (
-          <Link href={`/work/${next.slug}`} className="font-mono text-step--1 text-accent underline-offset-4 hover:underline">
+          <Link
+            href={`/work/${next.slug}`}
+            className="-mx-2 inline-flex min-h-[44px] items-center rounded px-2 text-right font-mono text-step--1 text-accent underline-offset-4 hover:underline"
+          >
             Next: {next.title} &rarr;
           </Link>
         ) : null}

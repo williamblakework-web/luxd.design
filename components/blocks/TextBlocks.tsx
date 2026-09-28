@@ -39,7 +39,10 @@ export function ListBlock({ block }: { block: BlockOf<'list'> }) {
             <span className="w-8 shrink-0 pt-0.5 font-mono text-step--1 text-accent">
               {block.ordered ? String(index + 1).padStart(2, '0') : '·'}
             </span>
-            <div className="min-w-0">
+            {/* max-w-measure matches the paragraph blocks: without it a list
+                item runs the full container and reads wider than the prose
+                either side of it. */}
+            <div className="min-w-0 max-w-measure">
               {item.term ? <strong className="block font-sans font-semibold text-ink">{item.term}</strong> : null}
               <span className={cn('block text-ink-2', isPlaceholder(item.body) && 'font-mono text-step--1 text-accent')}>
                 {item.body}

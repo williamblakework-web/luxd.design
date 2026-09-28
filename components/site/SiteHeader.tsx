@@ -9,10 +9,14 @@ import { ThemeToggle } from './ThemeToggle'
 import { cn } from '@/lib/utils'
 
 const NAV = [
-  { href: '/', label: 'Work' },
-  { href: '/clients', label: 'Clients' },
   { href: '/about', label: 'About' },
+  { href: '/', label: 'Work' },
   { href: '/feedback', label: 'Feedback' },
+  { href: '/clients', label: 'Clients' },
+  /* Contact is a section at the foot of the home page rather than a route of
+     its own, so it is an anchor. Given as a full path so it resolves from a
+     case study page too, not just from home. */
+  { href: '/#contact', label: 'Contact' },
 ]
 
 /** A case study lives under /work/, so it keeps the Work tab active. */
@@ -26,7 +30,9 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false)
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-bg/85 backdrop-blur-md backdrop-saturate-150 no-print">
+    // 95% rather than 85%: at 85% the blur alone did not stop headings and
+    // client logos ghosting through the bar as they scrolled under it.
+    <header className="sticky top-0 z-40 border-b border-line bg-bg/95 backdrop-blur-md backdrop-saturate-150 no-print">
       <div className="container-page">
         <nav className="flex items-center justify-between gap-4 py-3" aria-label="Primary">
           <Link href="/" className="flex shrink-0 items-center gap-2 whitespace-nowrap font-display text-step-0 font-bold tracking-tight text-ink">

@@ -46,25 +46,53 @@ export default function ClientsPage() {
 
               {/* Borders live on the cells, so a short final row leaves no
                   phantom filled cell where the grid background shows through. */}
-              <ul className="grid grid-cols-2 border-l border-t border-line sm:grid-cols-3 lg:grid-cols-4">
+              {/* auto-fill rather than a fixed column count, so a sector with
+                  two clients does not leave two empty cells hanging off the
+                  end of the row. */}
+              <ul className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3">
                 {group.entries.map((client) => {
                   const primary = client.projectSlugs[0]
+                  {/* Every mark is a transparent PNG, so the grid can hold them
+                      directly rather than on white plaques: grayscale at rest
+                      keeps the wall quiet and puts the sector headings first,
+                      and colour arrives on hover. In dark mode the same marks
+                      are inverted as well as desaturated, because these are
+                      dark lettered and would otherwise vanish. */}
                   const inner = (
-                    <span className="grid min-h-[96px] place-items-center bg-bg p-5 text-center font-display text-step--1 font-medium text-ink-2 transition-colors group-hover:text-accent">
+                    <span className="grid min-h-[116px] place-items-center rounded-card border border-line bg-bg-soft p-5 text-center transition-[transform,border-color,box-shadow] duration-200 group-hover:-translate-y-1.5 group-hover:border-accent group-hover:shadow-[0_10px_24px_-14px_rgb(var(--accent)/0.5)] motion-reduce:group-hover:translate-y-0">
                       {client.logo ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={client.logo} alt={client.name} className="max-h-8 w-auto" />
+                        /* eslint-disable-next-line @next/next/no-img-element */
+                        <img
+                          src={client.logo}
+                          alt={client.name}
+                          className="logo-mark"
+                          loading="lazy"
+                        />
                       ) : (
-                        client.name
+                        <span className="font-display text-step--1 font-medium text-ink-2 transition-colors group-hover:text-ink">
+                          {client.name}
+                        </span>
                       )}
                     </span>
                   )
 
                   return (
-                    <li key={client.id} className="group border-b border-r border-line">
+                    <li key={client.id} className="group relative">
                       {primary ? (
-                        <Link href={`/work/${primary}`} className="block focus-visible:outline-none">
+                        <Link
+                          href={`/work/${primary}`}
+                          className="block focus-visible:outline-none"
+                          aria-label={`${client.name}, read the case study`}
+                        >
                           {inner}
+                          {/* Without this nothing separates a cell that opens a
+                              case study from one that is just a logo. */}
+                          <span
+                            className="pointer-events-none absolute bottom-2 right-2 font-mono text-[0.65rem] uppercase tracking-wider text-accent opacity-0 transition-opacity group-hover:opacity-100"
+                            aria-hidden="true"
+                          >
+                            Case study &rarr;
+                          </span>
                         </Link>
                       ) : (
                         inner
@@ -98,18 +126,21 @@ export default function ClientsPage() {
                 <h3 className="mb-4 font-mono text-step--1 uppercase tracking-[0.14em] text-accent">
                   {ENGAGEMENT_CATEGORY_LABELS[category]}
                 </h3>
-                <ul className="flex flex-col gap-2.5">
+                {/* gap-1 plus padding on the links rather than gap-2.5 on the
+                    rows: the linked entries need a 24px target, and spacing
+                    them by padding keeps the list rhythm even. */}
+                <ul className="flex flex-col gap-1">
                   {entries.map((engagement) => (
                     <li key={engagement.id} className="text-step--1 text-ink-2">
                       {engagement.projectSlug ? (
                         <Link
                           href={`/work/${engagement.projectSlug}`}
-                          className="text-ink-2 underline decoration-line underline-offset-4 hover:text-accent hover:decoration-accent"
+                          className="-mx-1 inline-flex min-h-[32px] items-center rounded px-1 text-ink-2 underline decoration-line underline-offset-4 hover:text-accent hover:decoration-accent"
                         >
                           {engagement.label}
                         </Link>
                       ) : (
-                        engagement.label
+                        <span className="inline-flex min-h-[32px] items-center">{engagement.label}</span>
                       )}
                     </li>
                   ))}

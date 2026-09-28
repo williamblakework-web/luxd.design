@@ -1,34 +1,43 @@
 import Link from 'next/link'
-import { leadProject, supportingProjects, publishedProjects, siteMeta, about, testimonials, clients } from '@/lib/content'
+import { leadProject, supportingProjects, publishedProjects, clients, siteMeta, about } from '@/lib/content'
 import { ProjectCard } from '@/components/case-study/ProjectCard'
 import { AvailabilityBadge } from '@/components/site/AvailabilityBadge'
 import { SkillPills } from '@/components/site/SkillPills'
 import { AspectMedia } from '@/components/media/AspectMedia'
-import { TestimonialCard } from '@/components/site/TestimonialCard'
+import { ApproachIcon, type ApproachIconName } from '@/components/site/ApproachIcon'
+
+/** Sectors actually represented in the client list, not a figure typed in by hand. */
+const sectorCount = new Set(clients.map((client) => client.category)).size
 
 const APPROACH = [
   {
     title: 'Ownership before interface',
+    icon: 'ownership' as ApproachIconName,
     body: 'Most hard UI problems are ownership problems wearing a UI costume. Who is accountable for this record, who is allowed to change it, and what happens when it fails. Answer that and the screen usually designs itself.',
   },
   {
     title: 'One version of the truth',
+    icon: 'truth' as ApproachIconName,
     body: 'Customer facing products and the back office systems behind them tend to disagree. I design for a single shared account of state across both, because two versions of the truth is where the support cost lives.',
   },
   {
     title: 'Compliance as material',
+    icon: 'compliance' as ApproachIconName,
     body: 'Regulatory limits, AML tiers and safer gambling constraints are not checkboxes applied after the fact. Surfaced early they are planning information. Surfaced late they are failure states.',
   },
   {
     title: 'Build it, do not describe it',
+    icon: 'prototype' as ApproachIconName,
     body: 'Working prototypes beat annotated wireframes in every stakeholder room I have been in. I build the real thing early, in code where it helps, so decisions are made against something people can use.',
   },
   {
     title: 'Handoff is the deliverable',
+    icon: 'handoff' as ApproachIconName,
     body: 'A Figma link is not a specification. Token tables, component inventories and written build specs let engineering rebuild the work in any stack without making design decisions on the way.',
   },
   {
     title: 'AI used openly',
+    icon: 'ai' as ApproachIconName,
     body: 'Gemini for market and desk research, Claude for spec writing and rapid artifact generation. Every case study states plainly which decisions are mine and which output was machine assisted.',
   },
 ]
@@ -46,26 +55,41 @@ export default function WorkHomePage() {
         <h1 className="mt-6 max-w-[15ch] text-step-5">Complex systems, designed so someone can own them.</h1>
 
         <p className="mt-8 max-w-[38ch] text-step-1 text-ink-2">
-          Eight years of client facing product design in regulated, data heavy environments. FinTech, AI, automotive,
+          Ten years of product design, mostly enterprise and B2B SaaS, in regulated, data heavy environments. FinTech, AI, automotive,
           and the internal tooling that holds them together.
         </p>
 
         <SkillPills skills={about.featuredSkills} className="mt-8 max-w-3xl" />
 
-        <dl className="mt-12 flex flex-wrap gap-10 border-t border-line pt-6">
-          <div>
-            <dt className="font-mono text-step--1 uppercase tracking-[0.12em] text-ink-muted">Based</dt>
-            <dd className="mt-1 font-medium text-ink">{siteMeta.location}</dd>
-          </div>
-          <div>
-            <dt className="font-mono text-step--1 uppercase tracking-[0.12em] text-ink-muted">Practice</dt>
-            <dd className="mt-1 font-medium text-ink">{siteMeta.practice}</dd>
-          </div>
-          <div>
-            <dt className="font-mono text-step--1 uppercase tracking-[0.12em] text-ink-muted">Case studies</dt>
-            <dd className="mt-1 font-medium text-ink">{publishedProjects.length}</dd>
-          </div>
+        {/* Counts are derived rather than typed in, so the headline figures
+            cannot drift away from the catalogue the way a hardcoded number
+            does the moment a case study is added or pulled. */}
+        <dl className="mt-12 grid grid-cols-2 gap-x-8 gap-y-8 border-t border-line pt-8 sm:grid-cols-4">
+          {[
+            { value: String(publishedProjects.length), label: 'Published case studies' },
+            { value: '10', label: 'Years in product design' },
+            { value: String(clients.length), label: `Organisations across ${sectorCount} sectors` },
+            { value: '7', label: 'LUXD client engagements' },
+          ].map((stat) => (
+            <div key={stat.label}>
+              <dd className="font-display text-step-3 font-bold tracking-tight text-ink">{stat.value}</dd>
+              <dt className="mt-1 font-mono text-step--1 uppercase tracking-[0.12em] text-ink-muted">
+                {stat.label}
+              </dt>
+            </div>
+          ))}
         </dl>
+
+        <p className="mt-8 font-mono text-step--1 text-ink-muted">
+          {siteMeta.location} &middot; Also runs{' '}
+          <a
+            href={siteMeta.website}
+            className="text-ink underline decoration-line underline-offset-4 hover:text-accent hover:decoration-accent"
+          >
+            London UX Design
+          </a>
+          , a design and AI practice, alongside contract work
+        </p>
       </section>
 
       {/* ------------------------------------------------------------ Approach
@@ -82,9 +106,15 @@ export default function WorkHomePage() {
 
           <div className="grid gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-3">
             {APPROACH.map((item, index) => (
-              <article key={item.title} className="border-t-2 border-accent pt-4">
-                <span className="font-mono text-step--1 text-accent">{String(index + 1).padStart(2, '0')}</span>
-                <h3 className="mt-2 text-step-1 text-ink">{item.title}</h3>
+              <article
+                key={item.title}
+                className="group rounded-card border border-accent/30 bg-bg/40 p-5 transition-[transform,border-color,background-color,box-shadow] duration-200 hover:-translate-y-1 hover:border-accent hover:bg-bg hover:shadow-[0_8px_24px_-12px_rgb(var(--accent)/0.45)] motion-reduce:hover:translate-y-0"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-step--1 text-accent">{String(index + 1).padStart(2, '0')}</span>
+                  <ApproachIcon name={item.icon} />
+                </div>
+                <h3 className="mt-3 text-step-1 text-ink">{item.title}</h3>
                 <p className="mt-2 text-step--1 text-ink-2">{item.body}</p>
               </article>
             ))}
@@ -155,54 +185,8 @@ export default function WorkHomePage() {
         </div>
       </section>
 
-      {/* ------------------------------------------------------- Social proof */}
-      <section className="border-y border-line bg-bg-soft py-section" aria-labelledby="proof-heading">
-        <div className="container-page">
-          <div className="mb-10 flex flex-wrap items-baseline gap-4">
-            <span className="eyebrow eyebrow-rule">Testimonials &amp; clients</span>
-            <h2 id="proof-heading" className="text-step-3 text-accent">
-              What it was like to work with
-            </h2>
-          </div>
-
-          <div className="grid gap-6 lg:grid-cols-3">
-            {testimonials.slice(0, 3).map((testimonial) => (
-              <TestimonialCard key={testimonial.id} testimonial={testimonial} />
-            ))}
-          </div>
-          <Link href="/feedback" className="mt-6 inline-block font-mono text-step--1 text-accent">
-            Read all {testimonials.length} &rarr;
-          </Link>
-
-          <div className="mt-16">
-            <div className="mb-6 flex items-baseline justify-between gap-4">
-              <span className="font-mono text-step--1 uppercase tracking-[0.14em] text-ink-muted">
-                {clients.length} organisations
-              </span>
-              <Link href="/clients" className="font-mono text-step--1 text-accent">
-                See it grouped by sector &rarr;
-              </Link>
-            </div>
-            <ul className="grid grid-cols-2 border-l border-t border-line sm:grid-cols-3 lg:grid-cols-6">
-              {clients.map((client) => (
-                <li key={client.id} className="border-b border-r border-line">
-                  <span className="grid min-h-[80px] place-items-center bg-bg p-4 text-center font-display text-step--1 font-medium text-ink-2">
-                    {client.logo ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={client.logo} alt={client.name} className="max-h-7 w-auto" />
-                    ) : (
-                      client.name
-                    )}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </section>
-
       {/* ------------------------------------------------------------- Contact */}
-      <section className="container-page pb-section" aria-labelledby="contact-heading">
+      <section id="contact" className="container-page scroll-mt-24 pb-section" aria-labelledby="contact-heading">
         <div className="grid items-end gap-8 border-t-[7px] border-ink pt-8 md:grid-cols-[1fr_auto]">
           <div>
             <span className="eyebrow">Contact</span>

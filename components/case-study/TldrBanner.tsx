@@ -27,7 +27,20 @@ export function TldrBanner({ tldr }: { tldr: Tldr }) {
       {tldr.impact.length > 0 ? (
         <>
           <hr className="my-6 border-line" />
-          <dl className="grid gap-6 sm:grid-cols-3">
+          {/* Column count follows the number of metrics. A hard 3 columns left
+              a case study with one real figure sitting in a third of the row
+              with two empty tracks beside it, which read as missing content
+              rather than as a short list. */}
+          <dl
+            className={cn(
+              'grid gap-6',
+              tldr.impact.length === 1
+                ? 'sm:grid-cols-1'
+                : tldr.impact.length === 2
+                  ? 'sm:grid-cols-2'
+                  : 'sm:grid-cols-3',
+            )}
+          >
             {tldr.impact.slice(0, 4).map((metric, index) => (
               <div key={index}>
                 <dd
@@ -42,6 +55,7 @@ export function TldrBanner({ tldr }: { tldr: Tldr }) {
                   {metric.label}
                 </dt>
                 {metric.note ? <p className="mt-1 text-step--1 text-ink-muted">{metric.note}</p> : null}
+                {metric.detail ? <p className="mt-1 text-step--2 text-ink-muted">{metric.detail}</p> : null}
               </div>
             ))}
           </dl>

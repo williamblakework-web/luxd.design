@@ -4,6 +4,7 @@ import type { Block, Testimonial } from '@/lib/schema'
 import { TextBlock, ListBlock, QuoteBlock, StatementBlock, MetricsGridBlock } from './TextBlocks'
 import { MediaGridBlock, ComparisonBlock, EmbedBlock } from './MediaBlocks'
 import { TestimonialSliderBlock } from './TestimonialSlider'
+import { DiagramBlock } from './DiagramBlock'
 import { HeroBlock } from './HeroBlock'
 import { EditableBlock } from '@/components/editor/EditableBlock'
 
@@ -32,6 +33,8 @@ function renderBlock(block: Block, testimonials: Testimonial[]) {
       return <ComparisonBlock block={block} />
     case 'embed':
       return <EmbedBlock block={block} />
+    case 'diagram':
+      return <DiagramBlock block={block} />
     case 'testimonialSlider':
       return <TestimonialSliderBlock block={block} testimonials={testimonials} />
     default: {

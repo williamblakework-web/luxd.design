@@ -7,6 +7,7 @@ export const siteMeta: SiteMeta = {
   email: 'william@luxd.co.uk',
   phone: '+44 7926 733698',
   website: 'https://londonuxdesign.co.uk',
+  linkedin: 'https://linkedin.com/in/will-blake1',
   location: 'London, working remotely',
-  availability: 'Available ASAP',
+  availability: 'Available on request',
 }

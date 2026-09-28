@@ -37,6 +37,8 @@ export const metricSchema = z.object({
   label: z.string().min(1),
   /** Optional one line of provenance: how it was measured, over what period. */
   note: z.string().optional(),
+  /** Optional one-line elaboration shown below the metric in smaller text. */
+  detail: z.string().optional(),
 })
 export type Metric = z.infer<typeof metricSchema>
 
@@ -142,6 +144,28 @@ export const embedBlockSchema = z.object({
   fallbackText: z.string().default('This embed could not be loaded.'),
 })
 
+/**
+ * Hand drawn explanatory figures, rendered as inline SVG rather than as an
+ * image file. Inline is what makes `currentColor` work, so one drawing reads
+ * correctly in both themes, the labels stay real text for search and screen
+ * readers, and it stays sharp at any size.
+ *
+ * `key` names a component in components/diagrams. Keeping the drawing in code
+ * rather than in this content file stops a few hundred lines of path data
+ * sitting in the middle of the copy.
+ */
+export const diagramKeySchema = z.enum(['barclaycard-iterations', 'faculty-navigation'])
+export type DiagramKey = z.infer<typeof diagramKeySchema>
+
+export const diagramBlockSchema = z.object({
+  ...blockBase,
+  type: z.literal('diagram'),
+  heading: z.string().optional(),
+  key: diagramKeySchema,
+  /** One line under the figure saying what it shows. */
+  caption: z.string().optional(),
+})
+
 export const blockSchema = z.discriminatedUnion('type', [
   heroBlockSchema,
   textBlockSchema,
@@ -153,6 +177,7 @@ export const blockSchema = z.discriminatedUnion('type', [
   quoteBlockSchema,
   statementBlockSchema,
   embedBlockSchema,
+  diagramBlockSchema,
 ])
 
 export type Block = z.infer<typeof blockSchema>
@@ -244,6 +269,22 @@ export const ENGAGEMENT_CATEGORY_LABELS: Record<EngagementCategory, string> = {
   bids: 'Bid and proposals',
 }
 
+/**
+ * The compact IBM engagements grid: shorter pieces of work with real
+ * numbers but no full case study, rendered on the About page under the
+ * employment timeline.
+ */
+export const compactEngagementSchema = z.object({
+  id: z.string().min(1),
+  client: z.string().min(1),
+  title: z.string().min(1),
+  location: z.string().min(1),
+  duration: z.string().min(1),
+  description: z.string().min(1),
+  metric: z.string().optional(),
+})
+export type CompactEngagement = z.infer<typeof compactEngagementSchema>
+
 export const timelineEntrySchema = z.object({
   id: z.string().min(1),
   period: z.string().min(1),
@@ -260,6 +301,14 @@ export const skillGroupSchema = z.object({
 })
 export type SkillGroup = z.infer<typeof skillGroupSchema>
 
+export const educationEntrySchema = z.object({
+  id: z.string().min(1),
+  institution: z.string().min(1),
+  qualification: z.string().min(1),
+  description: z.string().optional(),
+})
+export type EducationEntry = z.infer<typeof educationEntrySchema>
+
 export const aboutSchema = z.object({
   heading: z.string().min(1),
   bio: z.array(z.string()).min(1),
@@ -270,6 +319,8 @@ export const aboutSchema = z.object({
    */
   featuredSkills: z.array(z.string()).default([]),
   timeline: z.array(timelineEntrySchema).default([]),
+  additionalEngagements: z.array(compactEngagementSchema).default([]),
+  education: z.array(educationEntrySchema).default([]),
   skillGroups: z.array(skillGroupSchema).default([]),
 })
 export type About = z.infer<typeof aboutSchema>
@@ -281,6 +332,7 @@ export const siteMetaSchema = z.object({
   email: z.string().email(),
   phone: z.string().min(1),
   website: z.string().url(),
+  linkedin: z.string().url().optional(),
   location: z.string().min(1),
   availability: z.string().min(1),
 })
@@ -417,6 +469,12 @@ export const BLOCK_REGISTRY: BlockDefinition[] = [
       media: { src: '', alt: '[ADD ALT TEXT]', aspect: '16/9', kind: 'figma' },
       fallbackText: 'This embed could not be loaded.',
     }),
+  },
+  {
+    type: 'diagram',
+    label: 'Diagram',
+    description: 'Hand drawn figure, inline SVG, themed.',
+    create: (id) => ({ id, type: 'diagram', key: 'barclaycard-iterations' }),
   },
   {
     type: 'testimonialSlider',

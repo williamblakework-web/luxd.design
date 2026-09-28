@@ -59,10 +59,68 @@ export default function AboutPage() {
           </ol>
         </div>
 
+        {/* Additional engagements. Shorter IBM pieces of work with real
+            numbers but no full case study: a compact grid, not case-study
+            pages. Rendered only when there is something to show. */}
+        {about.additionalEngagements.length > 0 ? (
+          <div className="mt-20">
+            <div className="mb-8 flex items-baseline gap-4">
+              <span className="eyebrow eyebrow-rule">02</span>
+              <h2 className="text-step-2">Additional IBM engagements</h2>
+            </div>
+
+            <div className="grid gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+              {about.additionalEngagements.map((entry) => (
+                <div key={entry.id} className="flex flex-col gap-2 bg-bg p-6">
+                  <span className="font-mono text-step--1 uppercase tracking-[0.1em] text-ink-muted">
+                    {entry.location} &middot; {entry.duration}
+                  </span>
+                  <h3 className="text-step-1">
+                    {entry.client}, {entry.title}
+                  </h3>
+                  <p className="prose-measure text-step--1">{entry.description}</p>
+                  {entry.metric ? (
+                    <p className="mt-1 font-mono text-step--1 text-accent">{entry.metric}</p>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        {/* Education. Rendered only when there is something to show, so the
+            numbered sections below it do not leave a gap if it is emptied. */}
+        {about.education.length > 0 ? (
+          <div className="mt-20">
+            <div className="mb-8 flex items-baseline gap-4">
+              <span className="eyebrow eyebrow-rule">{about.additionalEngagements.length > 0 ? '03' : '02'}</span>
+              <h2 className="text-step-2">Education</h2>
+            </div>
+
+            <ol className="space-y-0">
+              {about.education.map((entry) => (
+                <li key={entry.id} className="grid gap-2 border-t border-line py-6 sm:grid-cols-[10rem_1fr] sm:gap-6">
+                  <span className="font-mono text-step--1 uppercase tracking-[0.1em] text-ink-muted">
+                    {entry.institution}
+                  </span>
+                  <div>
+                    <h3 className="text-step-1">{entry.qualification}</h3>
+                    {entry.description ? (
+                      <p className="mt-2 prose-measure text-step--1">{entry.description}</p>
+                    ) : null}
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        ) : null}
+
         {/* Skills */}
         <div className="mt-20">
           <div className="mb-8 flex items-baseline gap-4">
-            <span className="eyebrow eyebrow-rule">02</span>
+            <span className="eyebrow eyebrow-rule">
+              {String(1 + (about.additionalEngagements.length > 0 ? 1 : 0) + (about.education.length > 0 ? 1 : 0) + 1).padStart(2, '0')}
+            </span>
             <h2 className="text-step-2">Practice areas</h2>
           </div>
 
@@ -102,6 +160,11 @@ export default function AboutPage() {
               <a href={siteMeta.website} className="w-fit border-b border-line pb-0.5 font-mono text-step--1 text-ink hover:border-accent hover:text-accent">
                 londonuxdesign.co.uk
               </a>
+              {siteMeta.linkedin ? (
+                <a href={siteMeta.linkedin} className="w-fit border-b border-line pb-0.5 font-mono text-step--1 text-ink hover:border-accent hover:text-accent">
+                  linkedin.com/in/will-blake1
+                </a>
+              ) : null}
             </div>
           </div>
           <a
